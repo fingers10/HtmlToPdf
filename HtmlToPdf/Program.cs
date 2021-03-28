@@ -1,9 +1,10 @@
-﻿using OpenQA.Selenium.Chrome;
+﻿using CliWrap;
+using OpenQA.Selenium.Chrome;
 using System;
 using System.Collections.Generic;
 using System.IO;
 
-Console.WriteLine("HtmlToPdf with Selenium WebDriver.");
+Console.WriteLine("Approach - 1: HtmlToPdf with Selenium WebDriver.");
 
 // Url can be webpage url for physical html file path.
 var url = "https://www.google.com";
@@ -29,5 +30,27 @@ var directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder
 Directory.CreateDirectory(directory);
 var filePath = Path.Combine(directory, "SeleniumWebDriverHtmlToPdf.pdf");
 await File.WriteAllBytesAsync(filePath, pdf);
+
+//==========================================================================
+
+Console.WriteLine("Approach - 2: HtmlToPdf with Chrome headless");
+
+var chromeCmd = Cli.Wrap("C:/Program Files (x86)/Google/Chrome/Application/chrome.exe")
+             .WithArguments(@$"/C --headless --disable-gpu --run-all-compositor-stages-before-draw --print-to-pdf-no-header --print-to-pdf=""C:/Users/Abdul Rahman/Desktop/test.pdf"" ""{url}""");
+
+var chromeResult = await chromeCmd.ExecuteAsync();
+
+//==========================================================================
+
+Console.WriteLine("Approach - 3: HtmlToPdf with wkhtmltopdf");
+
+var wkhtmltopdfCmd = Cli.Wrap("cmd.exe")
+             .WithArguments(@$"/C echo | set /p=""<h3>blep</h3>"" | ""C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"" -s A4 - ""C:\Users\Abdul Rahman\Desktop\test.pdf""");
+//or
+//WithArguments(@$"/C ""C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"" -s A4 - {url} ""C:\Users\Abdul Rahman\Desktop\test.pdf""");
+
+var wkhtmltopdfResult = await wkhtmltopdfCmd.ExecuteAsync();
+
+//==========================================================================
 
 Console.ReadLine();
